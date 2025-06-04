@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -134,6 +135,20 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="text-center mb-12">
+          {/* Logos */}
+          <div className="flex items-center justify-center gap-8 mb-6">
+            <img 
+              src="/lovable-uploads/d19aa7ad-be3e-46d2-8d8a-9d19ef9c9e32.png" 
+              alt="Logo 1" 
+              className="h-16 w-auto"
+            />
+            <img 
+              src="/lovable-uploads/17b1d5b4-caaf-4167-8f85-80cca2102ee1.png" 
+              alt="Eficaz Marketing e Tecnologia" 
+              className="h-16 w-auto"
+            />
+          </div>
+          
           <div className="flex items-center justify-center gap-2 mb-4">
             <Share className="w-8 h-8 text-purple-600" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
