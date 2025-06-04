@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Share, Sparkles, RefreshCw, Copy, Heart } from 'lucide-react';
+import { Share, Sparkles, RefreshCw, Copy, Heart, LogIn, UserPlus } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 
 interface FormData {
   tipoPost: string;
@@ -140,9 +140,25 @@ const Index = () => {
               Gerador de Posts
             </h1>
           </div>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 text-lg mb-6">
             Crie posts incríveis para suas redes sociais em segundos
           </p>
+          
+          {/* Login/Register buttons */}
+          <div className="flex items-center justify-center gap-4">
+            <Link to="/login">
+              <Button variant="outline" className="h-10 px-6">
+                <LogIn className="w-4 h-4 mr-2" />
+                Entrar
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button className="h-10 px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Cadastrar
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
