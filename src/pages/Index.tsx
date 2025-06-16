@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Share, Sparkles, RefreshCw, Copy, Heart, LogIn, UserPlus } from 'lucide-react';
+import { Share, Sparkles, RefreshCw, Copy, Heart, LogIn, UserPlus, User, LogOut, History } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { usePosts } from '@/hooks/usePosts';
 
 interface FormData {
   tipoPost: string;
@@ -21,6 +22,10 @@ interface FormData {
 
 const Index = () => {
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
+  const { savePost } = usePosts();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState<FormData>({
     tipoPost: '',
     tom: '',
@@ -38,6 +43,11 @@ const Index = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/', { replace: true });
+  };
+
   const generatePost = async () => {
     if (!formData.tipoPost || !formData.tom) {
       toast({
@@ -51,7 +61,7 @@ const Index = () => {
     setIsGenerating(true);
     
     // Simulação de geração de post (substitua pela integração com API)
-    setTimeout(() => {
+    setTimeout(async () => {
       let post = '';
       
       switch (formData.tipoPost) {
@@ -75,9 +85,15 @@ const Index = () => {
       setTextoGerado(post);
       setIsGenerating(false);
       
+      // Salvar o post no banco de dados se o usuário estiver logado
+      if (user) {
+        const prompt = `Tipo: ${formData.tipoPost}, Tom: ${formData.tom}${formData.produto ? `, Produto: ${formData.produto}` : ''}${formData.evento ? `, Evento: ${formData.evento}` : ''}${formData.dataLimite ? `, Data: ${formData.dataLimite}` : ''}${formData.link ? `, Link: ${formData.link}` : ''}`;
+        await savePost(post, formData.tipoPost, prompt);
+      }
+      
       toast({
         title: "Post gerado com sucesso!",
-        description: "Seu post foi criado. Você pode revisá-lo se desejar.",
+        description: user ? "Seu post foi criado e salvo no histórico." : "Seu post foi criado. Faça login para salvar no histórico.",
       });
     }, 2000);
   };
@@ -159,21 +175,46 @@ const Index = () => {
             Crie posts incríveis para suas redes sociais em segundos
           </p>
           
-          {/* Login/Register buttons */}
-          <div className="flex items-center justify-center gap-4">
-            <Link to="/login">
-              <Button variant="outline" className="h-10 px-6">
-                <LogIn className="w-4 h-4 mr-2" />
-                Entrar
+          {/* Login/Register buttons ou User info */}
+          {user ? (
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full">
+                <User className="w-4 h-4 text-purple-600" />
+                <span className="text-sm text-gray-700">
+                  Bem-vindo, {user.user_metadata?.name || user.email?.split('@')[0]}!
+                </span>
+              </div>
+              <Link to="/dashboard">
+                <Button variant="outline" className="h-10 px-6">
+                  <History className="w-4 h-4 mr-2" />
+                  Histórico
+                </Button>
+              </Link>
+              <Button 
+                onClick={handleLogout}
+                variant="outline" 
+                className="h-10 px-6 text-red-600 border-red-200 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
               </Button>
-            </Link>
-            <Link to="/register">
-              <Button className="h-10 px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Cadastrar
-              </Button>
-            </Link>
-          </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-4">
+              <Link to="/auth">
+                <Button variant="outline" className="h-10 px-6">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Entrar
+                </Button>
+              </Link>
+              <Link to="/auth">
+                <Button className="h-10 px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Cadastrar
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
